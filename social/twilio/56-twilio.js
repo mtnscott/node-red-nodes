@@ -67,7 +67,7 @@ module.exports = function(RED) {
                     // Check if we have a list of numbers
                     if ( tonum.indexOf('[') > -1) {
                         // iterate over the numbers
-                        numbersToMessage.forEach(function(tonum){
+                        tonum.forEach(function(number){
                             node.twilioClient.messages.create({to: number, from: node.fromNumber, body: msg.payload}).catch( function(err) {
                                 node.error(err.message,msg);
                             });
