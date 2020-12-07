@@ -54,7 +54,7 @@ module.exports = function(RED) {
             }
             try {
                 // decide if we are to Send SMS
-                var tonum = node.number || msg.topic;
+                var tonum = node.number || msg.number || msg.topic;
                 if ( this.twilioType == "call" ) {
                     // Make a call
                     var twimlurl = node.url || msg.payload;
@@ -65,15 +65,18 @@ module.exports = function(RED) {
                 else {
                     // Send SMS
                     // Check if we have a list of numbers
-                    if ( tonum.indexOf('[') > -1) {
+                    if ( Array.isArray(tonum) ) {
+                        //console.log("Using array of numbers -->", tonum)
                         // iterate over the numbers
-                        tonum.forEach(function(number){
-                            node.twilioClient.messages.create({to: number, from: node.fromNumber, body: msg.payload}).catch( function(err) {
+                        tonum.forEach(function(iNum){
+                            //console.log("Sending to -->", iNum);
+                            node.twilioClient.messages.create({to: iNum, from: node.fromNumber, body: msg.payload}).catch( function(err) {
                                 node.error(err.message,msg);
                             });
-                        }
+                        });
                     }
                     else {
+                        //console.log("Sending to single number -->", tonum);
                         node.twilioClient.messages.create({to: tonum, from: node.fromNumber, body: msg.payload}).catch( function(err) {
                             node.error(err.message,msg);
                         });
