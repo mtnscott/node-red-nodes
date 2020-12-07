@@ -64,9 +64,20 @@ module.exports = function(RED) {
                 }
                 else {
                     // Send SMS
-                    node.twilioClient.messages.create({to: tonum, from: node.fromNumber, body: msg.payload}).catch( function(err) {
-                        node.error(err.message,msg);
-                    });
+                    // Check if we have a list of numbers
+                    if ( tonum.indexOf('[') > -1) {
+                        // iterate over the numbers
+                        numbersToMessage.forEach(function(tonum){
+                            node.twilioClient.messages.create({to: number, from: node.fromNumber, body: msg.payload}).catch( function(err) {
+                                node.error(err.message,msg);
+                            });
+                        }
+                    }
+                    else {
+                        node.twilioClient.messages.create({to: tonum, from: node.fromNumber, body: msg.payload}).catch( function(err) {
+                            node.error(err.message,msg);
+                        });
+                    }
                 }
             }
             catch (err) {
